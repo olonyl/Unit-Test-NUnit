@@ -1,43 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Business
 {
-    public enum Type { Elf, Ork}
-    public class Character
+    public enum Type
     {
-        public Type Type { get => _type; set => _type = value; }
-        public string Name { get => _expected;}
-        public int Health { get => _health; }
-        public double Speed { get => Type == Type.Elf ? 1.7 : 1.4; }
-        public bool IsDead { get => _isDead; }
-        public List<string> Weaponry { get; set; } = new List<string>();
-        public int Armor { get=> _armor; set=> _armor = value; }
+        Elf,
+        Ork
+    }
 
-        private string _expected;
-        private int _health = 100;
-        private Type _type;
-        private bool _isDead = false;
-        private int _armor = 50;
+    public class Character : INotifyPropertyChanged, IDisposable
+    {
+        private string _name;
+        public Type Type { get; }
+
+        public List<string> Weaponry { get; }
 
         public Character(Type type)
         {
-            _type = type;
+            Type = type;
+            Weaponry = new List<string>();
         }
 
-        public Character(Type type, string expected)
+        public Character(Type type, string name) : this(type)
         {
-            _type = type;
-            _expected = expected;
+            Name = name;
         }
 
-        public void Damage(double damage)
+        public int Armor
         {
-            if (damage > 1000) throw new ArgumentOutOfRangeException("The value can not be grater thatn 1000");
-            _isDead = true;
+            get
+            {
+                switch (Type)
+                {
+                    case Type.Elf:
+                        return 60;
+                    case Type.Ork:
+                        return 100;
+                }
+                throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public bool IsDead => Health <= 0;
+
+        public double Speed
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case Type.Elf:
+                        return 1.7;
+                    case Type.Ork:
+                        return 1.4;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        public int Wear { get; private set; } = 15;
+        public int Health { get; private set; } = 100;
+
+        public int Defense => Wear >= Armor ? 0 : Armor - Wear;
+
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                OnPropertyChanged("Name");
+            }
+        }
+
+        public void Damage(int damage)
+        {
+            if (damage > 1000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(damage));
+            }
+            Health -= damage - Defense;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Dispose()
+        {
         }
     }
 }
