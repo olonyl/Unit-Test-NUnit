@@ -22,19 +22,20 @@ namespace Business.Tests
             //Assert.That(expected, Is.EqualTo(FizzBuzz.Ask(number)));
             Assert.AreEqual(expected, FizzBuzz.Ask(number));
         }
-    }
-
-    public class FizzBuzzSource : IEnumerable
-    {
-        public IEnumerator GetEnumerator()
+        public class FizzBuzzSource : IEnumerable
         {
-            yield return new dynamic[] { "Fizz", 3 };
-            yield return new dynamic[] { "Fizz", 6 };
-            yield return new dynamic[] { "Buzz", 5 };
-            yield return new dynamic[] { "Buzz", 10 };
-            yield return new dynamic[] { "FizzBuzz", 15 };
-            yield return new dynamic[] { "FizzBuzz", 30 };
-            yield return new dynamic[] { "", 7 };
+            public IEnumerator GetEnumerator()
+            {
+                yield return new dynamic[] { "Fizz", 3 };
+                yield return new dynamic[] { "Fizz", 6 };
+                yield return new dynamic[] { "Buzz", 5 };
+                yield return new dynamic[] { "Buzz", 10 };
+                yield return new dynamic[] { "FizzBuzz", 15 };
+                yield return new dynamic[] { "FizzBuzz", 30 };
+                yield return new dynamic[] { "", 7 };
+            }
         }
     }
+
+ 
 }
