@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using NUnit.Framework;
 
 namespace Business.Tests
 {
+    [Category("slow")]
     public class ActorTests
     {
         private Character _character;
@@ -25,6 +27,7 @@ namespace Business.Tests
         }
 
         [Test]
+        [Ignore("this is the reason")]
         public void IsDead_KillCharacter_ReturnsTrue()
         {
             _character.Damage(500);
@@ -32,12 +35,13 @@ namespace Business.Tests
         }
 
         [Test]
+        [Category("slow")]
         public void IsDead_DefaultCharacter_ReturnsFalse()
         {
             Assert.That(_character.IsDead, Is.False);
         }
 
-        [Test]
+        /*[Test]
         public void Health_Damage100OnElf_Returns45()
         {
             _character.Damage(100);
@@ -49,6 +53,25 @@ namespace Business.Tests
         {
             _character.Damage(80);
             Assert.That(_character.Health, Is.EqualTo(65));
+        }*/
+
+        //[TestCase(100,45)]
+        //[TestCase(80,65)]
+        [TestCaseSource(typeof(DamageSource))]
+        [Category("slow")]
+        public void Health_Damage_ReturnsCorrectValue(int damage, int expectedHealth)
+        {
+            _character.Damage(damage);
+            Assert.That(_character.Health, Is.EqualTo(expectedHealth));
+        }
+
+        public class DamageSource : IEnumerable
+        {
+            public IEnumerator GetEnumerator()
+            {
+                yield return new int[] { 100, 45 };
+                yield return new int[] { 80, 65 };
+            }
         }
     }
 }
