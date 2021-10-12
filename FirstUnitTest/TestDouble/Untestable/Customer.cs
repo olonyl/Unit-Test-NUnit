@@ -9,11 +9,17 @@ namespace Business.TestDouble.Untestable
 {
     public class Customer
     {
-        private readonly Logger _logger = new Logger();
+        private readonly IDbGateway _gateway;
+        private readonly ILogger _logger;
+
+        public Customer(IDbGateway gateway, ILogger logger)
+        {
+            _gateway = gateway;
+            _logger = logger;
+        }
         public decimal CalculateWage(int id)
         {
-            DbGateway gateway = new DbGateway();
-            WorkingStatistics ws = gateway.GetWorkingStatistics(id);
+            WorkingStatistics ws = _gateway.GetWorkingStatistics(id);
 
             decimal wage;
             if (ws.PayHourly)
@@ -31,7 +37,7 @@ namespace Business.TestDouble.Untestable
     }   
 }
 
-internal class Logger
+internal class Logger : ILogger
 {
     public void Info(string s)
     {
@@ -39,7 +45,7 @@ internal class Logger
     }
 }
 
-public class DbGateway
+public class DbGateway : IDbGateway
 {
     public WorkingStatistics GetWorkingStatistics(int id)
     {
