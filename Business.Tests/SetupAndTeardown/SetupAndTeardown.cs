@@ -21,7 +21,7 @@ public class SetupAndTeardown
     }
 }
 
-namespace Business.Tests
+namespace Business.Tests.SetupAndTeardown
 {
     [SetUpFixture]
     public class NamespaceSetupAndTeardown
