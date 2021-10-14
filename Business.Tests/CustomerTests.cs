@@ -5,12 +5,52 @@ using System.Text;
 using System.Threading.Tasks;
 using Business.TestDouble.Untestable;
 using Business.Tests.SetupAndTeardown.TestDouble;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace Business.Tests
 {
     public class CustomerTests
     {
+        public class CustomerTestsWithMockingFramework
+        {
+            [Test]
+            public void CalculateWage_HourlyPayed_ReturnsCorrectWage()
+            {
+                var gateway = Substitute.For<IDbGateway>();
+                var ws = new WorkingStatistics()
+                {
+                    PayHourly = true,
+                    HourSalary = 100,
+                    WorkingHours = 10
+                };
+                const int anyId = 1;
+
+                gateway.GetWorkingStatistics(anyId).ReturnsForAnyArgs(ws);
+
+                const decimal expectedWage = 10 * 100;
+                var customer = new Customer(gateway, Substitute.For<ILogger>());
+
+                decimal actualWage = customer.CalculateWage(anyId);
+                Assert.That(actualWage, Is.EqualTo(expectedWage).Within(0.1));
+
+            }
+
+            [Test]
+            public void CalculateWage_PassesCorrectId()
+            {
+                const int id = 1;
+                var gateway = Substitute.For<IDbGateway>();
+                gateway.GetWorkingStatistics(id).ReturnsForAnyArgs(new WorkingStatistics());
+
+                var customer = new Customer(gateway, Substitute.For<ILogger>());
+                customer.CalculateWage(1);
+
+                gateway.Received().GetWorkingStatistics(id);
+
+            }
+
+        }
         [Test]
         public void CalculateWage_HourlyPayed_ReturnsCorrectWage()
         {
