@@ -14,6 +14,9 @@ namespace Business.Tests.SetupAndTeardown.TestDouble
             {1, new WorkingStatistics(){PayHourly= false, MonthSalary = 500} },
             {1, new WorkingStatistics(){PayHourly= true, WorkingHours = 8, HourSalary = 100} }
         };
+
+        public bool Connected { get;  }
+
         public WorkingStatistics GetWorkingStatistics(int id)
         {
             return _storage[id];

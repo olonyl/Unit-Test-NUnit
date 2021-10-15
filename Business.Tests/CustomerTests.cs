@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Business.TestDouble.Untestable;
 using Business.Tests.SetupAndTeardown.TestDouble;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace Business.Tests
@@ -18,20 +19,16 @@ namespace Business.Tests
             public void CalculateWage_HourlyPayed_ReturnsCorrectWage()
             {
                 var gateway = Substitute.For<IDbGateway>();
-                var ws = new WorkingStatistics()
-                {
-                    PayHourly = true,
-                    HourSalary = 100,
-                    WorkingHours = 10
-                };
-                const int anyId = 1;
+                var ws = new WorkingStatistics(){PayHourly = true,HourSalary = 100,WorkingHours = 10};
 
-                gateway.GetWorkingStatistics(anyId).ReturnsForAnyArgs(ws);
+                gateway.GetWorkingStatistics(Arg.Any<int>()).ReturnsForAnyArgs(ws);
+                gateway.Connected.Returns(true);
 
                 const decimal expectedWage = 10 * 100;
                 var customer = new Customer(gateway, Substitute.For<ILogger>());
 
-                decimal actualWage = customer.CalculateWage(anyId);
+                decimal actualWage = customer.CalculateWage(0);
+                
                 Assert.That(actualWage, Is.EqualTo(expectedWage).Within(0.1));
 
             }
@@ -48,6 +45,17 @@ namespace Business.Tests
 
                 gateway.Received().GetWorkingStatistics(id);
 
+            }
+
+            [Test]
+            public void CalculateWage_ThrowsException_Returns0() {
+                var gateway = Substitute.For<IDbGateway>();
+                gateway.GetWorkingStatistics(Arg.Any<int>()).Throws(new InvalidOperationException());
+
+                var sut = new Customer(gateway, Substitute.For<ILogger>());
+
+                decimal actual = sut.CalculateWage(10);
+                Assert.That(actual, Is.EqualTo(0));
             }
 
         }

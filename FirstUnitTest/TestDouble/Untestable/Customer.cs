@@ -19,7 +19,18 @@ namespace Business.TestDouble.Untestable
         }
         public decimal CalculateWage(int id)
         {
-            WorkingStatistics ws = _gateway.GetWorkingStatistics(id);
+            //if (!_gateway.Connected)
+            //    return 0;
+            WorkingStatistics ws = null;
+            try
+            {
+                ws = _gateway.GetWorkingStatistics(id);
+            }
+            catch(Exception ex)
+            {
+                return 0;
+            }
+            
 
             decimal wage;
             if (ws.PayHourly)
@@ -47,6 +58,8 @@ internal class Logger : ILogger
 
 public class DbGateway : IDbGateway
 {
+    public bool Connected => throw new NotImplementedException();
+
     public WorkingStatistics GetWorkingStatistics(int id)
     {
         //a real gateway can experience any possible problems

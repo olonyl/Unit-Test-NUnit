@@ -12,6 +12,8 @@ namespace Business.Tests.SetupAndTeardown.TestDouble
 
         public int Id { get; private set; }
 
+        public bool Connected { get; }
+
         public WorkingStatistics GetWorkingStatistics(int id)
         {
             Id = id;

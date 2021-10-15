@@ -10,6 +10,8 @@ namespace Business.Tests.SetupAndTeardown.TestDouble
     {
         private WorkingStatistics _ws;
 
+        public bool Connected { get; }
+
         public WorkingStatistics GetWorkingStatistics(int id)
         {
             return _ws;
